@@ -18,13 +18,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
 .home-sub{font-size:13px;color:#999;margin-bottom:20px;line-height:1.6}
 
 .questions{padding:0 20px 20px}
-.q-block{margin-bottom:16px}
-.q-label{font-size:14px;font-weight:700;color:#1d1d1f;margin-bottom:8px;line-height:1.5}
-.q-num{color:#059669;margin-right:4px;font-size:12px}
-.q-opts{display:flex;flex-direction:column;gap:6px}
-.q-opt{padding:12px 14px;border-radius:10px;background:#fff;
-  border:1.5px solid #e5e7eb;font-size:12px;color:#666;line-height:1.4;
-  cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.q-block{margin-bottom:24px}
+.q-label{font-size:15px;font-weight:700;color:#1d1d1f;margin-bottom:10px;line-height:1.5}
+.q-num{color:#059669;margin-right:4px;font-size:13px}
+.q-opts{display:flex;flex-direction:column;gap:8px}
+.q-opt{padding:14px 16px;border-radius:12px;background:#fff;
+  border:1.5px solid #e5e7eb;font-size:14px;color:#666;line-height:1.5;
+  cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
 .q-opt:active{transform:scale(.98)}
 .q-opt.selected{border-color:#059669;background:rgba(5,150,105,.06);color:#059669}
 
@@ -267,7 +268,8 @@ Qs.forEach((q,qi) => {
 });
 
 document.querySelectorAll('.q-opt').forEach(opt => {
-  function pick(e){ e.preventDefault();
+  let startY = 0;
+  function pick(){
     const qi=+opt.dataset.qi, oi=+opt.dataset.oi;
     if(selected[qi]===oi) return;
     opt.closest('.q-opts').querySelectorAll('.q-opt').forEach(o=>o.classList.remove('selected'));
@@ -275,7 +277,12 @@ document.querySelectorAll('.q-opt').forEach(opt => {
     document.getElementById('submitBtn').classList.toggle('active',selected.every(s=>s!==null));
   }
   opt.addEventListener('click',pick);
-  opt.addEventListener('touchend',e=>{e.preventDefault();pick(e);});
+  opt.addEventListener('touchstart',e=>{startY=e.touches[0].clientY;},{passive:true});
+  opt.addEventListener('touchend',e=>{
+    e.preventDefault();
+    const dy=Math.abs(e.changedTouches[0].clientY-startY);
+    if(dy<10) pick();
+  });
 });
 
 document.getElementById('submitBtn').addEventListener('click',function(){
