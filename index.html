@@ -261,7 +261,7 @@ let selected = Array(Qs.length).fill(null);
 const qWrap = document.getElementById('questions');
 Qs.forEach((q,qi) => {
   const b = document.createElement('div'); b.className='q-block';
-  b.innerHTML = `<div class="q-label"><span class="q-num">Q${qi+1}</span>${q.q}</div>
+  b.innerHTML = `<div class="q-label"><span class="q-num">${qi+1}/${Qs.length}</span>${q.q}</div>
     <div class="q-opts" data-qi="${qi}">${q.opts.map((o,oi) =>
       `<div class="q-opt" data-qi="${qi}" data-oi="${oi}">${o.text}</div>`).join('')}</div>`;
   qWrap.appendChild(b);
