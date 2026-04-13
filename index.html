@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>老板SBTI人格测试</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
+  background:#f7f7f8;color:#1d1d1f;-webkit-font-smoothing:antialiased}
+#app{max-width:420px;margin:0 auto;min-height:100vh}
+
+.home{padding:48px 24px 40px;text-align:center;background:linear-gradient(180deg,#fff,#f7f7f8)}
+.home-badge{display:inline-block;font-size:11px;color:#059669;font-weight:600;
+  background:rgba(5,150,105,.08);padding:4px 14px;border-radius:20px;margin-bottom:16px;
+  border:1px solid rgba(5,150,105,.15)}
+.home-title{font-size:26px;font-weight:800;line-height:1.4;margin-bottom:8px;color:#1d1d1f}
+.home-sub{font-size:13px;color:#999;margin-bottom:20px;line-height:1.6}
+
+.questions{padding:0 20px 20px}
+.q-block{margin-bottom:16px}
+.q-label{font-size:14px;font-weight:700;color:#1d1d1f;margin-bottom:8px;line-height:1.5}
+.q-num{color:#059669;margin-right:4px;font-size:12px}
+.q-opts{display:flex;flex-direction:column;gap:6px}
+.q-opt{padding:12px 14px;border-radius:10px;background:#fff;
+  border:1.5px solid #e5e7eb;font-size:12px;color:#666;line-height:1.4;
+  cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.q-opt:active{transform:scale(.98)}
+.q-opt.selected{border-color:#059669;background:rgba(5,150,105,.06);color:#059669}
+
+.submit-wrap{padding:0 20px 32px}
+.submit-btn{display:block;width:100%;padding:15px;border-radius:50px;font-size:15px;
+  font-weight:700;border:0;cursor:pointer;transition:all .3s;
+  background:#e5e7eb;color:#bbb;pointer-events:none;-webkit-tap-highlight-color:transparent}
+.submit-btn.active{background:linear-gradient(135deg,#34d399,#059669);color:#fff;
+  pointer-events:auto;box-shadow:0 4px 20px rgba(52,211,153,.25)}
+.submit-btn.active:active{transform:scale(.97)}
+
+/* 结果页 */
+.result{display:none;background:#f7f7f8;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* hero 卡片：图片+文字叠加 */
+.res-hero{position:relative;width:100%;overflow:hidden;background:#fff}
+.res-hero-img{width:100%;height:420px;object-fit:cover;object-position:center top;display:block}
+.res-hero-placeholder{width:100%;height:420px;display:flex;align-items:center;
+  justify-content:center;font-size:120px;background:linear-gradient(180deg,#f0f0f0,#e8e8e8)}
+.res-hero-overlay{position:absolute;bottom:0;left:0;right:0;
+  padding:80px 24px 24px;text-align:center;
+  background:linear-gradient(180deg,transparent 0%,rgba(247,247,248,.6) 40%,rgba(247,247,248,.95) 70%,#f7f7f8 100%)}
+.res-name{font-size:32px;font-weight:900;color:#1d1d1f;letter-spacing:2px;margin-bottom:4px;
+  text-shadow:0 1px 8px rgba(255,255,255,.6)}
+.res-code{font-size:11px;font-weight:600;color:#059669;letter-spacing:4px;opacity:.7}
+
+.res-meta{text-align:center;padding:16px 24px 0;background:#f7f7f8}
+.res-tagline{font-size:13px;color:#888;margin-bottom:14px;line-height:1.5}
+.res-stats{display:flex;justify-content:center;gap:20px;margin-bottom:8px}
+.res-stat-val{font-size:16px;font-weight:700;color:#059669}
+.res-stat-label{font-size:10px;color:#999;margin-top:2px}
+
+.res-section{padding:16px;border-radius:14px;background:#fff;
+  border:1px solid #e5e7eb;margin:0 20px 12px}
+.res-body{padding-top:16px;padding-bottom:40px}
+.res-section-title{font-size:13px;font-weight:700;color:#059669;margin-bottom:10px}
+.res-text{font-size:12px;color:#666;line-height:1.8}
+
+.trait{margin-bottom:10px}.trait:last-child{margin-bottom:0}
+.trait-top{display:flex;justify-content:space-between;margin-bottom:4px}
+.trait-name{font-size:11px;color:#333;font-weight:600}
+.trait-val{font-size:10px;color:#059669;font-weight:700}
+.trait-bar{height:5px;background:#eee;border-radius:3px;overflow:hidden}
+.trait-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#34d399,#059669);transition:width 1s ease}
+.trait-desc{font-size:10px;color:#999;margin-top:3px;line-height:1.4}
+
+.res-hook{padding:16px;border-radius:14px;
+  background:rgba(5,150,105,.04);
+  border:1px solid rgba(5,150,105,.12);margin:0 20px 12px;text-align:center}
+.res-hook-title{font-size:13px;font-weight:700;color:#059669;margin-bottom:6px}
+.res-hook-text{font-size:12px;color:#888;line-height:1.7}
+.res-hook-text strong{color:#1d1d1f}
+
+.res-cta{padding:20px 16px;border-radius:16px;background:linear-gradient(135deg,#34d399,#059669);
+  text-align:center;margin:0 20px 12px}
+.res-cta-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.res-cta-sub{font-size:11px;color:rgba(255,255,255,.6);margin-bottom:12px}
+.res-cta-list{text-align:left;margin:0 auto 12px;max-width:260px}
+.res-cta-item{font-size:11px;color:rgba(255,255,255,.8);line-height:2;padding-left:16px;position:relative}
+.res-cta-item::before{content:'✓';position:absolute;left:0;font-weight:700}
+.res-cta-qr{width:90px;height:90px;background:#fff;border-radius:10px;margin:0 auto 8px;
+  display:flex;align-items:center;justify-content:center;font-size:10px;color:#999}
+.res-cta-trust{font-size:10px;color:rgba(255,255,255,.4)}
+
+.res-share{text-align:center;padding:12px 20px}
+.res-share-btn{display:inline-block;padding:10px 28px;border-radius:50px;font-size:12px;
+  font-weight:600;color:#059669;background:rgba(5,150,105,.06);border:1px solid rgba(5,150,105,.15);cursor:pointer}
+.res-foot{text-align:center;font-size:11px;color:#ccc;padding-bottom:20px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="mainPage">
+    <div class="home">
+      <span class="home-badge">🧪 SBTI · 老板人格测试</span>
+      <h1 class="home-title">测测你的老板SBTI</h1>
+      <p class="home-sub">5 道题，看看你是哪种老板 👇</p>
+    </div>
+    <div class="questions" id="questions"></div>
+    <div class="submit-wrap"><button class="submit-btn" id="submitBtn">看看我的老板SBTI</button></div>
+  </div>
+  <div class="result" id="result"></div>
+</div>
+<script>
+const Qs = [
+  { q: "这个月生意不太好，你第一反应是？", opts: [
+    { text: "也没什么好办法，先自己多顶一顶吧", s:{tank:3} },
+    { text: "是不是该换个思路试试别的了", s:{yolo:3} },
+    { text: "先看看什么情况，别急着乱动", s:{wait:2,chill:1} },
+    { text: "想归想，但手上一堆事根本顾不上", s:{spin:2,nice:1} }
+  ]},
+  { q: "有人给你推荐了一个新的获客方法，你？", opts: [
+    { text: "可以先了解一下，反正试试又不亏", s:{yolo:3} },
+    { text: "等有人试出效果了我再考虑", s:{wait:3} },
+    { text: "挺感兴趣的，就是最近实在忙不过来", s:{spin:2,nice:1} },
+    { text: "算了吧，折腾来折腾去还不如把眼前的做好", s:{chill:3} }
+  ]},
+  { q: "员工/合伙人搞砸了一件事，你？", opts: [
+    { text: "行吧，还是我自己来靠谱一点", s:{tank:3} },
+    { text: "也不能全怪他们，可能是我没交代清楚", s:{nice:2,spin:1} },
+    { text: "得好好理一理，看看到底哪个环节出了问题", s:{wait:2,yolo:1} },
+    { text: "算了，也不是多大的事", s:{chill:2,nice:1} }
+  ]},
+  { q: "同行约你出来聊聊，你？", opts: [
+    { text: "去了也坐不住，心里惦记着店里的事", s:{tank:2,spin:1} },
+    { text: "去吧，多认识点人总没坏处", s:{yolo:2,spin:1} },
+    { text: "去倒是去了，结果光帮别人忙了", s:{nice:3} },
+    { text: "不太爱这种场合，自己待着更舒服", s:{chill:2,wait:1} }
+  ]},
+  { q: "用一句话形容你现在的状态？", opts: [
+    { text: "每天都在忙，但也说不清在忙什么", s:{spin:2,tank:1} },
+    { text: "总觉得应该做点什么新的", s:{yolo:2,nice:1} },
+    { text: "稳着来吧，至少别出错", s:{wait:2,tank:1} },
+    { text: "说实话有点累了，但也不敢真停下来", s:{chill:2,nice:1} }
+  ]}
+];
+
+const TYPES = {
+  tank: {
+    code:"TANK", name:"超能战士型", emoji:"💪", img:"img/tank.png",
+    tagline:"自己干的活比员工都多，铁人中的铁人",
+    bg:"linear-gradient(135deg,#374151,#1f2937)",
+    pct:28, stars:"★★★★☆",
+    summary:"你是那种最扛事的老板——从采购到送货到售后，全是你一个人。别人觉得你铁打的，其实你只是觉得教别人还不如自己干快。你不是不想放手，是放了心不踏实。",
+    traits:[
+      {name:"扛事能力",val:95,desc:"全宇宙最能扛，一个人就是一支队伍"},
+      {name:"决策魄力",val:40,desc:"不是没魄力，是魄力全用在\"不变\"上了"},
+      {name:"接受新事物",val:15,desc:"新东西？等它证明自己了再说"},
+      {name:"社交意愿",val:20,desc:"不社交，不应酬，闷头干活"},
+      {name:"团队依赖",val:8,desc:"团队？你就是团队"}
+    ],
+    hookTitle:"给超能战士的一个建议",
+    hookText:"你扛得住，但不代表要一直一个人扛。<strong>看看同行是怎么用更省力的方式找到客户的</strong>，多了解一下总没坏处。",
+    ctaTitle:"你一个人扛了这么久，该让客户主动来找你了",
+    ctaItems:["同行超能战士是怎么从\"自己找客户\"变成\"客户找自己\"的","适合一个人干的轻量获客方式","不用招人也能稳定来客户的方法","有问题随时问，一对一免费答疑"]
+  },
+  yolo: {
+    code:"YOLO", name:"先干为敬型", emoji:"🔥", img:"img/yolo.png",
+    tagline:"什么新方法都要第一个试，行动力拉满",
+    bg:"linear-gradient(135deg,#92400e,#78350f)",
+    pct:18, stars:"★★★☆☆",
+    summary:"你是那种行动力拉满的老板——看到新渠道就想上，犹豫在你的字典里不存在。你试过的方法比别人听过的都多，抖音注册了三个号，上个月刚花钱学了直播。朋友都说你有冲劲，你觉得做生意就该这样。",
+    traits:[
+      {name:"扛事能力",val:55,desc:"扛得住，但更喜欢冲出去找新路"},
+      {name:"决策魄力",val:98,desc:"全类型最高，说干就干从不犹豫"},
+      {name:"接受新事物",val:95,desc:"什么新东西都要第一个试"},
+      {name:"社交意愿",val:80,desc:"到处加人，认识的人比客户还多"},
+      {name:"团队依赖",val:30,desc:"有时候跑太快团队跟不上"}
+    ],
+    hookTitle:"给先干为敬型的一个建议",
+    hookText:"你的行动力是真的强，如果能<strong>找到一个值得 ALL IN 的方向</strong>，效果可能比试十个都好。不妨看看同行里跑通的人是怎么做的。",
+    ctaTitle:"试了这么多，看看哪个方法真正跑通了",
+    ctaItems:["同行试过的获客方法，哪些有效哪些是坑","你这个行业目前效果最好的获客路子","不用全试一遍，直接看别人的验证结果","有问题随时问，一对一免费答疑"]
+  },
+  wait: {
+    code:"SAFE", name:"稳如老狗型", emoji:"🛡️", img:"img/wait.png",
+    tagline:"没把握的事绝对不碰，稳字当头",
+    bg:"linear-gradient(135deg,#1e3a5f,#0f2744)",
+    pct:24, stars:"★★★★☆",
+    summary:"你是那种最理性的老板——任何事你都要想清楚再做，不打没准备的仗。你关注行业动态，研究过各种方法论，收藏夹里存了200篇文章。身边人觉得你想太多，但你知道自己是谨慎，不是怂。",
+    traits:[
+      {name:"扛事能力",val:70,desc:"沉得住气，但有时候稳过了头就变成了拖"},
+      {name:"决策魄力",val:15,desc:"全类型最低，但你管这叫\"深思熟虑\""},
+      {name:"接受新事物",val:55,desc:"不排斥新东西，但要先做完功课"},
+      {name:"社交意愿",val:40,desc:"社交可以，但更喜欢自己研究"},
+      {name:"团队依赖",val:45,desc:"知道应该用人，但总觉得时机没到"}
+    ],
+    hookTitle:"给稳如老狗的一个建议",
+    hookText:"你的分析能力已经够了，有时候<strong>先迈一小步看看反馈</strong>，比想到完美再出发更快。不用大投入，先了解一下有哪些低成本的方式可以试。",
+    ctaTitle:"稳着来也可以，先看看别人怎么低成本起步的",
+    ctaItems:["低风险、低成本的获客方式有哪些","同行里\"稳如老狗\"型老板是怎么迈出第一步的","不用大投入也能试的方法","有问题随时问，一对一免费答疑"]
+  },
+  spin: {
+    code:"SPIN", name:"劳模本模型", emoji:"🐙", img:"img/spin.png",
+    tagline:"大事小事都要管，累但停不下来",
+    bg:"linear-gradient(135deg,#5b21b6,#4c1d95)",
+    pct:15, stars:"★★★☆☆",
+    summary:"你是那种精力最旺盛的老板——手上永远有五六件事同时推，微信置顶了十几个对话。你最大的特点是停不下来，休息对你来说比工作还难。身边人说你是劳模，你说这就是老板的命。",
+    traits:[
+      {name:"扛事能力",val:60,desc:"什么都接什么都做，但每件事都做到70%"},
+      {name:"决策魄力",val:75,desc:"决策很快，但经常过两天又推翻"},
+      {name:"接受新事物",val:90,desc:"新东西？加到list里！（list已经爆了）"},
+      {name:"社交意愿",val:85,desc:"认识的人巨多，但深交的没几个"},
+      {name:"团队依赖",val:35,desc:"有团队但什么都自己插手，团队等于没有"}
+    ],
+    hookTitle:"给劳模本模的一个建议",
+    hookText:"你的执行力不缺，如果能<strong>先聚焦一个方向深扎下去</strong>，可能比同时铺开更快见效。不妨看看别人是怎么选方向的。",
+    ctaTitle:"忙了这么久，看看怎么让客户来找你而不是你找客户",
+    ctaItems:["同行劳模是怎么把获客从\"人力活\"变成\"自动来\"的","最值得你优先聚焦的那一个获客方向","用最少的精力撬动最多客户的方法","有问题随时问，一对一免费答疑"]
+  },
+  nice: {
+    code:"GIVE", name:"居委会型", emoji:"🔋", img:"img/nice.png",
+    tagline:"什么事最后都找你，你也不好意思不管",
+    bg:"linear-gradient(135deg,#be185d,#9d174d)",
+    pct:10, stars:"★★★★★",
+    summary:"你是那种客户最喜欢的老板——好说话、有耐心、从来不翻脸。客户砍价你让步，员工请假你批准，朋友找你帮忙你不好意思拒绝。所有人都觉得你人好，但你自己的事……好像总被别人的事排在后面。",
+    traits:[
+      {name:"扛事能力",val:50,desc:"不是扛不住，是被各种人情债压得没空扛自己的事"},
+      {name:"决策魄力",val:25,desc:"做决定之前先想\"别人会不会不高兴\""},
+      {name:"接受新事物",val:60,desc:"别人说好就试试吧，自己没什么主见"},
+      {name:"社交意愿",val:90,desc:"人缘极好，但好到被消耗"},
+      {name:"团队依赖",val:55,desc:"有团队但不好意思管，怕得罪人"}
+    ],
+    hookTitle:"给居委会型的一个建议",
+    hookText:"你的人缘是真的好，如果能<strong>把一部分精力从\"帮别人\"转到\"发展自己\"上</strong>，效果会很不一样。看看同行老板是怎么平衡人情和生意的。",
+    ctaTitle:"帮了这么多人，这次让别人帮帮你",
+    ctaItems:["同行老板怎么在不得罪人的情况下专注自己的生意","把好人缘变成客户来源的方法","不用改变性格也能做好获客的方式","有问题随时问，一对一免费答疑"]
+  },
+  chill: {
+    code:"CHILL", name:"退休预备役", emoji:"🏖️", img:"img/chill.png",
+    tagline:"干了这么多年，有点不想卷了",
+    bg:"linear-gradient(135deg,#065f46,#064e3b)",
+    pct:5, stars:"★★☆☆☆",
+    summary:"你是最稀有的老板类型——不焦虑、不内卷、不跟风。别人都在抢客户的时候，你在泡茶。别人在研究短视频的时候，你在遛狗。你信奉\"够用就好\"，不追求做大做强，只想舒服地过日子。",
+    traits:[
+      {name:"扛事能力",val:45,desc:"能扛但不想扛，能躺着绝不站着"},
+      {name:"决策魄力",val:30,desc:"无所谓，都行，你们决定吧"},
+      {name:"接受新事物",val:20,desc:"新东西？让别人先试吧"},
+      {name:"社交意愿",val:25,desc:"能不出门就不出门"},
+      {name:"团队依赖",val:15,desc:"团队？养人多累啊"}
+    ],
+    hookTitle:"给退休预备役的一个建议",
+    hookText:"佛系挺好的，但如果有一种<strong>不费劲就能多来几个客户的方法</strong>，了解一下也不吃亏对吧？真的很轻松，不需要你改变生活方式。",
+    ctaTitle:"不用卷，看看最省力的获客方式是什么",
+    ctaItems:["真的不费劲的获客方法，躺着也能来客户","同行退休预备役怎么用最少的精力维持生意","不用改变生活方式也能稳定客源的路子","有问题随时问，一对一免费答疑"]
+  }
+};
+
+const allKeys = Object.keys(TYPES);
+let selected = Array(Qs.length).fill(null);
+
+const qWrap = document.getElementById('questions');
+Qs.forEach((q,qi) => {
+  const b = document.createElement('div'); b.className='q-block';
+  b.innerHTML = `<div class="q-label"><span class="q-num">Q${qi+1}</span>${q.q}</div>
+    <div class="q-opts" data-qi="${qi}">${q.opts.map((o,oi) =>
+      `<div class="q-opt" data-qi="${qi}" data-oi="${oi}">${o.text}</div>`).join('')}</div>`;
+  qWrap.appendChild(b);
+});
+
+document.querySelectorAll('.q-opt').forEach(opt => {
+  function pick(e){ e.preventDefault();
+    const qi=+opt.dataset.qi, oi=+opt.dataset.oi;
+    if(selected[qi]===oi) return;
+    opt.closest('.q-opts').querySelectorAll('.q-opt').forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected'); selected[qi]=oi;
+    document.getElementById('submitBtn').classList.toggle('active',selected.every(s=>s!==null));
+  }
+  opt.addEventListener('click',pick);
+  opt.addEventListener('touchend',e=>{e.preventDefault();pick(e);});
+});
+
+document.getElementById('submitBtn').addEventListener('click',function(){
+  if(!this.classList.contains('active')) return;
+  const scores={};allKeys.forEach(k=>scores[k]=0);
+  selected.forEach((oi,qi)=>{const s=Qs[qi].opts[oi].s;for(const k in s)scores[k]+=s[k];});
+  const mx=Math.max(...Object.values(scores));
+  const tied=Object.keys(scores).filter(k=>scores[k]===mx);
+  showResult(tied[Math.floor(Math.random()*tied.length)]);
+});
+
+function showResult(key){
+  document.getElementById('mainPage').style.display='none';
+  const res=document.getElementById('result'), t=TYPES[key];
+  res.style.display='block';
+  const traits=t.traits.map(tr=>`<div class="trait">
+    <div class="trait-top"><span class="trait-name">${tr.name}</span><span class="trait-val">${tr.val}%</span></div>
+    <div class="trait-bar"><div class="trait-fill" style="width:0%" data-w="${tr.val}"></div></div>
+    <div class="trait-desc">${tr.desc}</div></div>`).join('');
+
+  const heroImg = t.img
+    ? `<img class="res-hero-img" src="${t.img}" alt="${t.name}">`
+    : `<div class="res-hero-placeholder">${t.emoji}</div>`;
+
+  res.innerHTML=`
+    <div class="res-hero">
+      ${heroImg}
+      <div class="res-hero-overlay">
+        <div class="res-name">${t.name}</div>
+        <div class="res-code">— ${t.code} —</div>
+      </div>
+    </div>
+    <div class="res-meta">
+      <div class="res-tagline">"${t.tagline}"</div>
+      <div class="res-stats">
+        <div><div class="res-stat-val">${t.pct}%</div><div class="res-stat-label">同类老板占比</div></div>
+        <div><div class="res-stat-val">${t.stars}</div><div class="res-stat-label">苦命指数</div></div>
+      </div>
+    </div>
+    <div class="res-body">
+    <div class="res-section">
+      <div class="res-section-title">📝 人格分析</div>
+      <div class="res-text">${t.summary}</div>
+    </div>
+    <div class="res-section">
+      <div class="res-section-title">📊 五维画像</div>
+      ${traits}
+    </div>
+    <div class="res-hook">
+      <div class="res-hook-title">💡 ${t.hookTitle}</div>
+      <div class="res-hook-text">${t.hookText}</div>
+    </div>
+    <div class="res-cta">
+      <div class="res-cta-title">${t.ctaTitle}</div>
+      <div class="res-cta-sub">免费领一份和你情况相关的参考资料</div>
+      <div class="res-cta-list">
+        ${t.ctaItems.map(i => `<div class="res-cta-item">${i}</div>`).join('')}
+      </div>
+      <div class="res-cta-qr">二维码</div>
+      <div class="res-cta-trust">✅ 全程免费 · ✅ 不推销 · ✅ 随时可删</div>
+    </div>
+    <div class="res-share"><span class="res-share-btn">📤 分享给朋友看看TA是什么型</span></div>
+    <div class="res-foot">已有 8,421 位老板测过</div>
+    </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(()=>{res.querySelectorAll('[data-w]').forEach(b=>{b.style.width=b.dataset.w+'%';});},200);
+}
+</script>
+</body>
+</html>
